@@ -9,7 +9,7 @@ public class Main {
         Scanner sc = new Scanner(System.in);
         String nombreFichero = sc.nextLine();
         Scanner num = new Scanner(System.in);
-        int opcion = 0;
+        int opcion;
 
         do {
             System.out.println("¿Que quieres hacer?");
@@ -20,34 +20,25 @@ public class Main {
             System.out.println("5. Generar 100 ids y notas aleatorias");
             System.out.println("6. Leer todas las notas");
             System.out.println("0. Salir");
-            opcion = num.nextInt();
+            try {
+                opcion = num.nextInt();
+            } catch (Exception e) {
+                System.out.println("Introduce un numero");
+                opcion = 0;
+            }
             Scanner doubleNum = new Scanner(System.in);
             //lanza Gestor.jar y en los argumentos le pasa la opcion el nombre del fichero el id y la nota
             switch (opcion) {
-                case 1 -> {
-                    nuevaNota(num, doubleNum, "w", nombreFichero);
-                }
-                case 2 -> {
-                    leerNota(nombreFichero, num);
-                }
-                case 3 -> {
-                    modificarNota(num, doubleNum, "m", nombreFichero);
-                }
-                case 4 -> {
-                    eliminarNota(nombreFichero, num);
-                }
-                case 5 -> {
-                    crear100notas(nombreFichero);
-                }
-                case 6 -> {
-                    leerTodas(nombreFichero);
-                }
+                case 1 -> nuevaNota(num, doubleNum, nombreFichero);
+                case 2 -> leerNota(nombreFichero, num);
+                case 3 -> modificarNota(num, doubleNum, nombreFichero);
+                case 4 -> eliminarNota(nombreFichero, num);
+                case 5 -> crear100notas(nombreFichero);
+                case 6 -> leerTodas(nombreFichero);
             }
 
         } while (opcion != 0);
     }
-
-    //JavaDoc leerTodas
 
     /**
      * Lee todas las notas
@@ -63,12 +54,10 @@ public class Main {
         try {
             Process p = Runtime.getRuntime().exec("java -jar Gestor.jar " + argumentos[0] + " " + argumentos[1] + " " + argumentos[2]);
             flujoDatos(p);
-        } catch (IOException e) {
+        } catch (IOException | IllegalArgumentException e) {
             e.printStackTrace();
         }
     }
-
-    //JavaDoc crear100notas
 
     /**
      * Crea 100 notas aleatorias
@@ -87,7 +76,7 @@ public class Main {
             try {
                 Process p = Runtime.getRuntime().exec("java -jar Gestor.jar w " + argumentos[1] + " " + argumentos[2] + " " + argumentos[3]);
                 flujoDatos(p);
-            } catch (Exception e) {
+            } catch (IOException | IllegalArgumentException | ArrayIndexOutOfBoundsException e) {
                 e.printStackTrace();
             }
         }
@@ -104,13 +93,17 @@ public class Main {
      */
     private static void eliminarNota(String nombreFichero, Scanner num) {
         System.out.println("Introduce el id:");
-        int id = num.nextInt();
-        String[] argumentos = {"d", nombreFichero, String.valueOf(id)};
         try {
-            Process p = Runtime.getRuntime().exec("java -jar Gestor.jar " + argumentos[0] + " " + argumentos[1] + " " + argumentos[2]);
-            flujoDatos(p);
-        } catch (IOException e) {
-            e.printStackTrace();
+            int id = num.nextInt();
+            String[] argumentos = {"e", nombreFichero, String.valueOf(id)};
+            try {
+                Process p = Runtime.getRuntime().exec("java -jar Gestor.jar " + argumentos[0] + " " + argumentos[1] + " " + argumentos[2]);
+                flujoDatos(p);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        } catch (Exception e) {
+            System.out.println("Introduce un numero");
         }
     }
 
@@ -119,23 +112,26 @@ public class Main {
      *
      * @param num           Scanner para leer el id
      * @param doubleNum     Scanner para leer la nota
-     * @param m             String para modificar
      * @param nombreFichero Nombre del fichero
      * @throws IOException                    Si no se puede leer el fichero
      * @throws NumberFormatException          Si el id o la nota no son numeros
      * @throws ArrayIndexOutOfBoundsException Si el id o la nota no son numeros
      */
-    private static void modificarNota(Scanner num, Scanner doubleNum, String m, String nombreFichero) {
-        System.out.println("Introduce el id:");
-        int id = num.nextInt();
-        System.out.println("Introduce la nota:");
-        double nota = Double.parseDouble(doubleNum.next());
-        String[] argumentos = {m, nombreFichero, String.valueOf(id), String.valueOf(nota)};
+    private static void modificarNota(Scanner num, Scanner doubleNum, String nombreFichero) {
         try {
-            Process p = Runtime.getRuntime().exec("java -jar Gestor.jar " + argumentos[0] + " " + argumentos[1] + " " + argumentos[2] + " " + argumentos[3]);
-            flujoDatos(p);
-        } catch (IOException e) {
-            e.printStackTrace();
+            System.out.println("Introduce el id:");
+            int id = num.nextInt();
+            System.out.println("Introduce la nota:");
+            double nota = Double.parseDouble(doubleNum.next());
+            String[] argumentos = {"m", nombreFichero, String.valueOf(id), String.valueOf(nota)};
+            try {
+                Process p = Runtime.getRuntime().exec("java -jar Gestor.jar " + argumentos[0] + " " + argumentos[1] + " " + argumentos[2] + " " + argumentos[3]);
+                flujoDatos(p);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        } catch (Exception e) {
+            System.out.println("Introduce un numero");
         }
     }
 
@@ -149,14 +145,18 @@ public class Main {
      * @throws ArrayIndexOutOfBoundsException Si el id no es un numero
      */
     private static void leerNota(String nombreFichero, Scanner num) {
-        System.out.println("Introduce el id:");
-        int id = num.nextInt();
-        String[] argumentos = {"r", nombreFichero, String.valueOf(id)};
         try {
-            Process p = Runtime.getRuntime().exec("java -jar Gestor.jar " + argumentos[0] + " " + argumentos[1] + " " + argumentos[2]);
-            flujoDatos(p);
-        } catch (IOException e) {
-            e.printStackTrace();
+            System.out.println("Introduce el id:");
+            int id = num.nextInt();
+            String[] argumentos = {"r", nombreFichero, String.valueOf(id)};
+            try {
+                Process p = Runtime.getRuntime().exec("java -jar Gestor.jar " + argumentos[0] + " " + argumentos[1] + " " + argumentos[2]);
+                flujoDatos(p);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        } catch (Exception e) {
+            System.out.println("Introduce un numero");
         }
     }
 
@@ -165,23 +165,26 @@ public class Main {
      *
      * @param num           Scanner para leer el id.
      * @param doubleNum     Scanner para leer la nota.
-     * @param w             String para escribir.
      * @param nombreFichero Nombre del fichero.
      * @throws NumberFormatException          Si el id o la nota no son numeros.
      * @throws ArrayIndexOutOfBoundsException Si el id o la nota no son numeros.
      * @throws IOException                    Si no se puede escribir en el fichero.
      */
-    private static void nuevaNota(Scanner num, Scanner doubleNum, String w, String nombreFichero) {
-        System.out.println("Introduce el id:");
-        int id = num.nextInt();
-        System.out.println("Introduce la nota:");
-        double nota = Double.parseDouble(doubleNum.next());
-        String[] argumentos = {w, nombreFichero, String.valueOf(id), String.valueOf(nota)};
+    private static void nuevaNota(Scanner num, Scanner doubleNum, String nombreFichero) {
         try {
-            Process p = Runtime.getRuntime().exec("java -jar Gestor.jar " + argumentos[0] + " " + argumentos[1] + " " + argumentos[2] + " " + argumentos[3]);
-            flujoDatos(p);
-        } catch (IOException e) {
-            e.printStackTrace();
+            System.out.println("Introduce el id:");
+            int id = num.nextInt();
+            System.out.println("Introduce la nota:");
+            double nota = Double.parseDouble(doubleNum.next());
+            String[] argumentos = {"w", nombreFichero, String.valueOf(id), String.valueOf(nota)};
+            try {
+                Process p = Runtime.getRuntime().exec("java -jar Gestor.jar " + argumentos[0] + " " + argumentos[1] + " " + argumentos[2] + " " + argumentos[3]);
+                flujoDatos(p);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        } catch (Exception e) {
+            System.out.println("Introduce un numero");
         }
     }
 
